@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Hi-C Processing</title>
+
+<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="Hi-C_workshop_intro.html">Getting Started</a>
+</li>
+<li>
+  <a href="Hi-C_workshop_processing.html">Mapping and Filtering</a>
+</li>
+<li>
+  <a href="Hi-C_workshop_formatting.html">Formatting with Cooler</a>
+</li>
+<li>
+  <a href="Hi-C_workshop_visualisation.html">Visualisation</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Hi-C Processing</h1>
+
+</div>
+
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+<hr />
+<p><img src="images/hic_method.png" /></p>
+<p>Each fragment contains two sequences from different parts of genome, i.e. genomic regions which are close in 3D space but distal on the linear genome.</p>
+<p>How do we get from raw reads to a matrix? Typically a pipeline is used to process Hi-C data, today we are using a tool called HiC-Pro.</p>
+<p><img src="images/pipeline.png" /></p>
+<p><br></p>
+<div id="hic-pro" class="section level3">
+<h3>HiC-Pro</h3>
+<p>Briefly, reads are mapped to a reference, quality control is performed and fragments may be rejected, our pairs of valid interactions are binned into a matrix, finally this is balanced to prevent bias.</p>
+<p>The first stage is mapping raw reads to our reference genome;</p>
+<p><br></p>
+<div id="mapping-reads" class="section level4">
+<h4>Mapping Reads</h4>
+<p>Standard mapping tools (here bowtie2) and formats (fastq) are used but the alignment procedure differs.</p>
+<p>These are mapped against our reference genome, and although reads are paired end, we map them in single end mode, so each mate is mapped independently.</p>
+<p><br></p>
+</div>
+<div id="qc-and-filter-reads" class="section level4">
+<h4>QC and Filter Reads</h4>
+<p>There are several sources of error unique to the HiC method which need to be filtered.</p>
+<p><img src="images/filter.png" /></p>
+<p><br></p>
+<p>Some errors in the library are expected, for example problems with ligation;</p>
+<p>Dangling End - unligated fragments</p>
+<p>Self Circle - fragments ligate to themselves</p>
+<p>Reads may also be removed based on quality score, size etc.</p>
+<p>This will be handled by the pipeline which gives you reports of the filtering required at each stage.</p>
+<p><br></p>
+</div>
+<div id="hic-pro-does-all-of-this-for-us" class="section level4">
+<h4>HiC-Pro does all of this for us!</h4>
+<p>It runs from the command line using a configuration file.</p>
+<p><a href="http://bifx-core3.bio.ed.ac.uk/Dan/Training/HiC_Workshop/files/config.txt" class="uri">http://bifx-core3.bio.ed.ac.uk/Dan/Training/HiC_Workshop/files/config.txt</a></p>
+<pre class="bash"><code>cp /homes2/drober19/hic_workshop/config.txt .</code></pre>
+<p><br></p>
+</div>
+<div id="config-file" class="section level4">
+<h4>Config File</h4>
+<p>This is already set up for the test data, have a look at the options;</p>
+<pre class="bash"><code>less config.txt</code></pre>
+<p>*press ‘q’ to exit</p>
+<p>If you needed to change this, open this in a text editor such as nano and edit lines as needed;</p>
+<pre class="bash"><code>#nano config.txt</code></pre>
+<p><br></p>
+</div>
+<div id="input-data" class="section level4">
+<h4>Input Data</h4>
+<p>We should already have our fastq files (*see Getting started), note HiC-Pro expects a folder for each sample under the INPUT folder;</p>
+<p>/test_data /dixon_2M /dixon_2M_2</p>
+<p>With two reads (*_R1/*_R2) in each sample folder;</p>
+<p>/test_data/dixon_2M</p>
+<p>SRR400264_00_R1.fastq</p>
+<p>SRR400264_00_R2.fastq</p>
+<p>/test_data/dixon_2M_2</p>
+<p>SRR400264_01_R1.fastq</p>
+<p>SRR400264_01_R2.fastq</p>
+<p>These contain both read and quality information.</p>
+<pre class="bash"><code>head test_data/dixon_2M_2/SRR400264_01_R1.fastq</code></pre>
+<p><span class="citation">@SRR400264.250001</span> HWI-ST216_0180:3:1101:17686:30917 length=36 TATAGGGGCATGTTCAGATAAGTCACTTGTAAATAA +SRR400264.250001 HWI-ST216_0180:3:1101:17686:30917 length=36 HHHHHHHHHHHHHHHHHHGHHHHHHHHHHHHHHHHH</p>
+<p><br></p>
+</div>
+<div id="annotation-files" class="section level4">
+<h4>Annotation Files</h4>
+<p>Several Annotation files need to be specified in the config, these contain information about our reference genome. HiC-Pro comes complete with human hg19 annotation files, so we don’t need to do anything here.</p>
+<p>For reference the files look like this; <a href="http://bifx-core3.bio.ed.ac.uk/Dan/Training/HiC_Workshop/files/" class="uri">http://bifx-core3.bio.ed.ac.uk/Dan/Training/HiC_Workshop/files/</a></p>
+<p><br></p>
+</div>
+<div id="chromosome-size-length-file" class="section level4">
+<h4>Chromosome size (length) file</h4>
+<p>A BED file giving the size of each chromosome.</p>
+<p>chr1 249250621</p>
+<p>chr2 243199373</p>
+<p>chr3 198022430</p>
+<p><br></p>
+</div>
+<div id="restriction-sites" class="section level4">
+<h4>Restriction sites</h4>
+<p>A BED file with the restriction fragments sites in our reference (HiC-Pro contains a tool to create this).</p>
+<p>chr1 0 16007 HIC_chr1_1 0 +</p>
+<p>chr1 16007 24571 HIC_chr1_2 0 +</p>
+<p>chr1 24571 27981 HIC_chr1_3 0 +</p>
+<p>It also requires The bowtie2 indexes, these are already available on our server; /homes/genomes/human/hg19/bowtie2_indexes</p>
+<!--Instructions for creating annotation files
+HiC-Pro comes complete with humam/mouse annotation files, if you are using a different reference you'll need to create these;
+
+Digest the hg19 genome by HindIII using HiC-Pro utility; digest_genome.py
+#UPDATE /usr/local/HiC-Pro-master/bin/utils/digest_genome.py -r A^AGCTT -o HindIII_resfrag_hg19.bed ~genomes/human/hg19/hg19.fa
+
+samtools faidex hg19.fa
+cut -f1,2 hg19.fa.fai > sizes.hg19 OR fetch from UCSC
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.chrom.sizes
+
+index your genome
+bowtie2-build ~genomes/human/hg19/hg19.fa hg19
+All chromosome names must match!
+-->
+<p><br></p>
+</div>
+<div id="running-hic-pro" class="section level4">
+<h4>Running HiC-Pro</h4>
+<p>The pipeline runs using a single command;</p>
+<pre class="bash"><code>HiC-Pro</code></pre>
+<p>You just need to specify three arguments;</p>
+<p>-i input directory -o output directory -c configuration file</p>
+<pre class="bash"><code>HiC-Pro -i test_data -o dixon_out -c config.txt</code></pre>
+<p>The mapping works in two steps, first the entire read is aligned and in cases where reads span the ligation junction those reads are trimmed (3*) and mapped again.</p>
+<p>This is normally a lengthy process (hours/days) as there are large numbers of reads and contacts which need to be processed. This small data set should only take around 3 minutes. Note, HiC-Pro can be run in a sequential (step by step) mode if needed.</p>
+<p><br></p>
+</div>
+<div id="output-files" class="section level4">
+<h4>Output Files</h4>
+<p>HiC-Pro gives us different output folders, with QC reports, intermediate data and matrix files (*note these matrix files and in triple sparse format and not useful for us today).</p>
+<p>Once this has finished lets have a look at the output directory</p>
+<pre class="bash"><code>ls dixon_out/</code></pre>
+<p><br></p>
+</div>
+<div id="quality-control-reports" class="section level4">
+<h4>Quality control reports</h4>
+<p>There are QC reports for each sample under; dixon_out/hic_results/pic/</p>
+<p>You should be able to find them in your public_html page;</p>
+<p><a href="https://bifx-core3.bio.ed.ac.uk/~USERNAME/Hi-C_workshop/dixon_out/hic_results/pic/dixon_2M/" class="uri">https://bifx-core3.bio.ed.ac.uk/~USERNAME/Hi-C_workshop/dixon_out/hic_results/pic/dixon_2M/</a></p>
+<p>^edit your USERNAME</p>
+<p><img src="images/merge_qc.png" /></p>
+<p><br></p>
+</div>
+<div id="multiqc" class="section level4">
+<h4>MultiQC</h4>
+<p>Rather than looking through individual reports for each sample, lets use a tool called MultiQC to aggregate everything;</p>
+<pre class="bash"><code>multiqc dixon_out/*</code></pre>
+<p><a href="https://bifx-core3.bio.ed.ac.uk/~USERNAME/Hi-C_workshop/dixon_out/multiqc_report.html" class="uri">https://bifx-core3.bio.ed.ac.uk/~USERNAME/Hi-C_workshop/dixon_out/multiqc_report.html</a></p>
+<p><img src="images/multiqc.png" /></p>
+<p><br></p>
+<pre><code>From out limited number of reads (~250,000), how many valid pairs do we have?
+
+What reads are being filtered out? What do you think may have gone wrong experimentally?</code></pre>
+<p><br></p>
+<p><br></p>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i>Key Aims:
+</h2>
+<div id="section" class="section level2">
+<h2></h2>
+<ul>
+<li>Running HiC-Pro</li>
+<li>Understanding QC reports</li>
+</ul>
+</div>
+</div>
+<p><br></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

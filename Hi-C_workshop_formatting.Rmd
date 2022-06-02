@@ -1,0 +1,169 @@
+---
+title: "Creating the Matrix"
+output: 
+  html_document:
+    df_print: paged
+    css: "style.css"
+---
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+----
+
+### File Formats
+After processing we should now have paired contacts that contain only valid interactions. This allows us to plot a matrix showing points of interaction. As mentioned previously, HiC-Pro has given us a matrix but it is not in the format we need. There are currently two principle formats used for Hi-C, these are each tied to their respective tools (.hic for Juicebox & .cool for HiGlass). Both formats/tools are supported by 4DN as well as other tools.
+
+<br>
+
+'A significant portion of bioinformatics is just converting data from one format to another.' Jason Stajich
+
+<!--Matrix (triplet sparse format)
+Two interacting bins and an interaction frequency.
+
+dixon_out/hic_results/matrix/dixon_2M/raw/20000/dixon_2M_20000.matrix
+28 113593 1
+41 41 1
+41 62970 1
+
+These can be plotted directly, here with HiCPlotter;
+
+#python /usr/local/HiCPlotter-master/HiCPlotter.py -tri 1 -f dixon_out/hic_results/matrix/dixon_2M/iced/1000000/dixon_2M_1000000_iced.matrix -bed dixon_out/hic_results/matrix/dixon_2M/raw/1000000/dixon_2M_1000000_abs.bed -n dixon_2M_ICE_1mb_chr1 -chr chr1 -o hicplotter_out_r1mb -r 1000000
+-->
+
+<br>
+
+#### Valid Pairs
+These are the pairs of coordinates for valid interactions only.
+
+dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs
+
+This is what we want to work with, to convert into out required format.
+
+```bash
+head dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs
+```
+
+<br>
+
+#### Formatting with Cooler
+As we're using HiGlass, lets convert the valid pairs into the cool format, the cooler tool can do this.
+
+We can either do this by running multiple cooler commands directly or making use of the HiC-Pro script hicpro2higlass.sh
+
+Using HiC-Pro Utilities
+This can be achieved by running;
+
+Get the chromsizes file
+```bash
+cp /homes2/drober19/hic_workshop/chrom_hg19.sizes .
+```
+
+Create an output directory
+```bash
+mkdir cooler_out
+```
+
+Note the resolution '-r' is set to 10kb for the cool file, this will also give us a .mcool file with multiple resolutions.
+-n matrix is balanced (normalised)
+
+```bash
+/library/software/misc_containers/containers/hicpro/3.1.0/hicpro_3.1.0_ubuntu.img hicpro2higlass.sh -i dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs -r 10000 -c chrom_hg19.sizes -p 2 -n -o cooler_out
+
+/library/software/misc_containers/containers/hicpro/3.1.0/hicpro_3.1.0_ubuntu.img hicpro2higlass.sh -i dixon_out/hic_results/data/dixon_2M_2/dixon_2M_2.allValidPairs -r 10000 -c chrom_hg19.sizes -p 2 -n -o cooler_out
+```
+
+<br>
+
+#### Using Cooler
+Or if you want to do this by step by step, see https://github.com/mirnylab/cooler-binder/blob/master/cooler_cli.ipynb.
+
+We should now all have a balanced matrix in the .cool/.mcool formats.
+
+This mcool file can be loaded into HiGlass, this can only been done by an admin but I've already added these files for demonstration;
+
+![][dixon_sparse]
+Remember this was just a subset of reads so we see a sparse matrix.
+
+<!--You can turn this off in HiGlass, by clicking options for a matrix then Configure Series/Transforms/None.
+
+Alternative methods exist, but the differences are opaque; ICE/KR/VC Comparison -->
+
+<br>
+
+
+### HiCExplorer
+
+Once we have cool files we can use these files as input for other tools, [HiCExplorer](https://hicexplorer.readthedocs.io/en/latest/index.html) is a tool with a lot of useful functions for further analysis. 
+
+Lets compare our matrices using 'hicPlotDistVsCounts', this allows a quick comparison between multiple matrices of the Hi-C counts 'enrichment' at different genomic distances.Biological replicates should display the exact same distribution
+
+This creates a distance vs. Hi-C counts plot;
+```bash
+hicPlotDistVsCounts -m cooler_out/dixon_2M.cool cooler_out/dixon_2M_2.cool -o counts_vs_dist.png 
+```
+
+![][counts_vs_dist_10kb_dixon]
+
+    How do our samples look? Remember these are small subsets.
+
+![][counts_vs_dist_example]
+
+Above is an example where replicates from condition one are not well correlated, but are distinct from the second condition. The second are well correlated and display enriched long-range contacts. (All are smoother as these were binned at 50kb)
+
+<br>
+
+### The Matrix
+
+Before visualization our matrix lets go over the basics of a contact map.
+
+Areas of high intensity mean lots of interactions in that location, the matrix allows us to see interactions across the whole genome, both short and long range.
+
+![][cis_trans]
+
+Here we have a matrix showing chromosomes 1, 2 and 3, you can clearly see chromosome territories, i.e. chromosomes are interacting with themself (cis) with few interchromosomal (trans) interactaions.
+
+Here we are zooming into chromosome 3, as expected there are lots of local interactions close to the diagonal, these regions are close in the linear sense so are more likely to interact which each other. As we move further away from the diagonal there are fewer interactions as these regions are further apart.
+
+![][simple]
+
+Note; the lower left half of the matrix is just a mirror image of the the upper right.
+
+<br>
+
+
+#### Normalisation
+Hi-C data contains systematic biases which need to be balanced. This is down to both techincal bias of sequencing/mapping and biological artifacts such as GC content. Here the ICE method of normalisation is applied to a raw hic matrix.
+
+![][norm]
+
+<br>
+
+
+<br>
+
+
+<div class="key-points">
+<h2><i class="fas fa-thumbtack"></i>Key Aims:</h2>
+##
+ * Converting file formats
+ * Downstream Tools
+ * Interptreting a matrix
+</div>
+<br>
+
+
+[dixon_sparse]: images/dixon_sparse.png ""
+[norm]: images/norm.png ""
+[cis_trans]: images/cis_trans.png ""
+[simple]: images/simple.png ""
+[counts_vs_dist_10kb_dixon]: images/counts_vs_dist_10kb_dixon.png ""
+[counts_vs_dist_example]: images/counts_vs_dist_example.png ""
+[name]: images/file.png ""
+[name]: images/file.png ""
+[name]: images/file.png ""

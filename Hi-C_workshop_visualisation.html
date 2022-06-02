@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Visualisation</title>
+
+<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="Hi-C_workshop_intro.html">Getting Started</a>
+</li>
+<li>
+  <a href="Hi-C_workshop_processing.html">Mapping and Filtering</a>
+</li>
+<li>
+  <a href="Hi-C_workshop_formatting.html">Creating the Matrix</a>
+</li>
+<li>
+  <a href="Hi-C_workshop_visualisation.html">Visualisation</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Visualisation</h1>
+
+</div>
+
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+<hr />
+<div id="visualisation-with-higlass" class="section level3">
+<h3>Visualisation with HiGlass</h3>
+<p>For interactive visualisation the main tools are <a href="http://www.aidenlab.org/juicebox/">Juicebox</a> and HiGlass</p>
+<p>In this workshop we are going to focus on HiGlass;</p>
+<p>Local HiGlass Server: <a href="http://bifx-core3.bio.ed.ac.uk:32771/app" class="uri">http://bifx-core3.bio.ed.ac.uk:32771/app</a></p>
+<p>Official HiGlass Server: <a href="https://higlass.io/app" class="uri">https://higlass.io/app</a></p>
+<p><img src="images/anatomy.png" /></p>
+<p>This is a single HiGlass view, tracks can be added to the centre (typically a matrix here) and to the top, bottom, left or right. The view settings are in the upper right corner, note that each track has it’s own settings menu. You can open multiple views, these can be resized (bottom right) and moved (upper left).</p>
+<p>Basic Operations</p>
+<p>Click <img src="images/app.png" /> to open full screen app</p>
+<p><img src="images/settings.png" /></p>
+<p><br></p>
+</div>
+<div id="excerise-1" class="section level3">
+<h3>Excerise 1</h3>
+<p>Lets load some data and annotations</p>
+<p>Try loading a matrix into the <em>centre</em> of the view</p>
+<p>Select; Rao et al. (2014) GM12878 Mbol (allreps) 1kb</p>
+<p>Load as a heatmap (2d-tiles shows underlying aggregation) <!--update this image? --> <img src="images/add_rao.png" /></p>
+<p>Don’t forget to add chromosome annotations (normally to at least the top track)</p>
+<p>Here we want hg19</p>
+<p><img src="images/add_chr_hg19.png" /></p>
+<p>You should be looking at something like this;</p>
+<p><img src="images/rao_all_ann.png" /></p>
+<p>Here I’ve added chromosome annotations to the top and left tracks, I’ve also added hg19 gene annotations to the top. The text in the lower right of the matrix tells us information about the sample and the current resolution.</p>
+<p>What happens if you add a matrix to the bottom? (you might need to close centre track/resize bottom)</p>
+<p><img src="images/bottom_matrix.png" /></p>
+<p><br></p>
+</div>
+<div id="features" class="section level3">
+<h3>Features</h3>
+<p>Now that we have data in front of us, lets see if we can identify some features, we’ll start by looking at a single chromosome then progressively zoom in. We are still working with the Rao data, try and follow along and see if you can see these features for yourself.</p>
+<p><br></p>
+<div id="compartments" class="section level4">
+<h4>Compartments</h4>
+<p><img src="images/chr_3_hot.png" /></p>
+<p>Once we ‘zoom’ into a single chromosome, one of the most notable features is this checkerboard or plaid pattern, this partitioning into alternating genomic compartments is observed across the genome, these are refered to as A/B compartments.</p>
+<p>This can be seen more clearly in the original Hi-C paper;</p>
+<p><img src="images/aiden.png" /></p>
+<p>Pearson Correalation, Lieberman-Aiden (2009)</p>
+<p>These compartments are identified by principle componants but also correspond with chromatin state, gene density, GC content and histone markers. Arbitrarily, A Compartments are defined as open gene dense regions (euchromatic), and B compartments as closed gene poor regions (heterochromatic).</p>
+<p>Subcompartments have also been identified but the method is not yet available, this requires billions of reads.</p>
+<p><br></p>
+</div>
+<div id="tads" class="section level4">
+<h4>TADs</h4>
+<p>Moving in closer to the diagonal we notice square blocks of interactions (&lt;1 Mb), (resolution is 32k).</p>
+<p><img src="images/tad_zoom.png" /></p>
+<p>These contact domains are often refered to Topalogically Associated Domains (TADs), they are regions which interact more which each other than with neighboring regions either up or downstream along the diagonal.</p>
+<p>It can be difficult to define these boundaries precisely, both by eye or using a TAD caller, particularly when they seem to have a nested structure.</p>
+<p>TAD callers comparison from Forcato et al. 2017. Here each view shows Rao data as matrix (all reps) and bottom tracks show output of that TAD caller on each replicate.</p>
+<p><img src="images/allrepssidebyside.png" /></p>
+<p>Here we can see TAD’s as blocks drawn onto the matrix, here just looking at a single sample.</p>
+<p><img src="images/rephsidebyside.png" /></p>
+<p><br></p>
+</div>
+<div id="loops" class="section level4">
+<h4>Loops</h4>
+<p>Zooming in further (4k) to these domains we may see enriched areas as dark spots.</p>
+<p><img src="images/loop_zoom.png" /></p>
+<p>Loops are at a smaller scale (80kb-500kb) and harder to see by eye, these enriched points of interaction are often seen as a corner peak.</p>
+<p>Note that loops close to the diagonal may be underestimated/missed due to noise, conversely loops called at longer ranges may be false as the background here is so sparse. Loops callers which compare points against the local background aim to alleviate this.</p>
+<p>These maps alone are purely qualatative, but they DO allow us to detect patterns and identify regions of interest. Tools can be used to identify the above features computationally, giving output in conventional 2D tracks, these in turn can be analysed by standard bioinformatics methods.</p>
+<p><br></p>
+</div>
+</div>
+<div id="excercise-2" class="section level3">
+<h3>Excercise 2</h3>
+<p>Here I’m zooming in on my favourite gene, Sonic Hedgehog.</p>
+<p><img src="images/shhzoom.png" /></p>
+<p>See if you can find your favourite gene.</p>
+<pre><code>    Hint: &#39;Toggle position search box&#39; in View settings</code></pre>
+<p>As well as displaying annotations you can also add other genomic data tracks of interest (e.g. from ChIP-Seq experiments).</p>
+<p>Try adding additional tracks on the horizontal axis</p>
+<p>(e.g. CTCF peaks from Encode)</p>
+<p>Right click in a matrix to add rules/cross sections</p>
+<pre><code>Can you see any interesting features?</code></pre>
+<p>Are there relevant annotations available to add to your view?</p>
+<p>Hint; HICCUPS Loops overlayed on matrix</p>
+<p>Can you change the colour map for a matrix (Matrix settings/Configure Series/Colour Map)</p>
+<p>Above I’ve gone for ‘Jet’ blue</p>
+<p><img src="images/colours.jpg" /></p>
+<p>What happens if you adjust the colour intensity bar?</p>
+<p>If you want to save what you find just ‘save views as Link’ in the view option, this gives you a shortcut.</p>
+<p><br></p>
+</div>
+<div id="higlass---advanced-features" class="section level3">
+<h3>HiGlass - Advanced Features</h3>
+<p>Let’s look at some more advanced features using multiple views in HiGlass. Let’s say we want to compare two samples, it would be useful to compare the same region at the same resolution simultaniously.</p>
+<p><br></p>
+<div id="synchronisation" class="section level4">
+<h4>Synchronisation</h4>
+<p>One of the most useful features of HiGlass is to take the position and/or zoom level (resolution) from another view and apply it to the current view, this can also be locked so both views are synced together.</p>
+<p><img src="images/new_link.png" /></p>
+<p>Open another view (copies current view) and open settings menu</p>
+<p>Select ‘Take and lock zoom and location with’</p>
+<p>Choose the matrix you want to copy zoom/location from</p>
+<p>These views are now linked.</p>
+<p><br></p>
+</div>
+<div id="zooming-via-viewport" class="section level4">
+<h4>Zooming via Viewport</h4>
+<p>Another useful feature is to zoom into an area and display this on another view, i.e. ‘Show this viewport on’</p>
+<p><img src="images/view2.png" /></p>
+<p>Open settings menu on one of the views</p>
+<p>Select ‘Show this viewport on’</p>
+<p>Make sure the zoom level isn’t locked</p>
+<p>Choose the matrix you want to copy zoom on</p>
+<p>The shaded area shows the extent of the zoomed view</p>
+<p><br></p>
+</div>
+</div>
+<div id="excercise-3" class="section level3">
+<h3>Excercise 3</h3>
+<p>Let’s put everything you’ve learned into practice, using some different data.</p>
+<p>Here we are comparing a Wild Type and a cohesion loading factor Nipbl deletion matrix, see if you can re-create this figure from the HiGlass paper based on Scharzer et al. (2017).</p>
+<p><img src="images/scharzer_exercise.png" /></p>
+<details>
+<summary>
+Help
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i>
+</h2>
+<p>Clear all current views/annotations</p>
+<p>‘Clear View’ shortcut in view settings.</p>
+<p>Load each data set ‘Scharzer et al (2017) NIPBL / Scarzer et al (2017) WT’</p>
+<p>Resize view before opening to get views in portrait</p>
+<p>Add chromosome/gene annotations (Mouse mm9)</p>
+<p>Navigate to the region of interest (in both views)</p>
+<p>~chr14: 40,000,000 - 100,000,000</p>
+<p>Zoom on this region using viewports (in new views)</p>
+<p>~chr14: 60,000,000 - 80,000,000</p>
+<p>Add additional tracks</p>
+<p>Here RNA-Seq H3K27ac &amp; H3K4me active histone marks for WT &amp; Nipbl</p>
+</div>
+</details>
+<p><br></p>
+<pre><code>Can you find differences?</code></pre>
+<details>
+<summary>
+Hint*
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i>
+</h2>
+<p>see this figure from the paper; <img src="images/scharzer_fig.png" /></p>
+<p><img src="images/nibl_10.png" /></p>
+</div>
+</details>
+<!--Further Reading
+Take a look at these other examples
+
+Read the Docs; HiC-Pro Docs
+HiGlass Docs
+
+These tools also process/visualise HiC data;
+Juicer Tools (pre converts to Juicebox friendly format)
+Juicebox (runs like IGV, good If you want to explore your own data privately)
+
+You can also set up HiGlass locally via docker;
+Higlass Docker
+ 
+Additional tools/libraries can be installed on request but several require familiarity with python. -->
+<br> <br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i>Key Aims:
+</h2>
+<div id="section" class="section level2">
+<h2></h2>
+<ul>
+<li>Navigate HiGlass</li>
+<li>Exploring Features</li>
+</ul>
+</div>
+</div>
+<p><br></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

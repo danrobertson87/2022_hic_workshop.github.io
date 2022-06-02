@@ -1,0 +1,20 @@
+name: "WCB Hi-C Workshop"
+navbar:
+  title: "Home"
+  left:
+    - text: "Getting Started"
+      href: Hi-C_workshop_intro.html
+    - text: "Mapping and Filtering"
+      href: Hi-C_workshop_processing.html
+    - text: "Creating the Matrix"
+      href: Hi-C_workshop_formatting.html
+    - text: "Visualisation"
+      href: Hi-C_workshop_visualisation.html
+
+output_dir: "."
+output:
+  html_document:
+    theme: yeti
+    highlight: textmate
+#    include:
+#      after_body: _footer.html

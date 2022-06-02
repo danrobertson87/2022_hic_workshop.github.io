@@ -1,0 +1,306 @@
+---
+title: "Visualisation"
+output: 
+  html_document:
+    df_print: paged
+    css: "style.css"
+---
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+----
+
+
+### Visualisation with HiGlass
+For interactive visualisation the main tools are [Juicebox](http://www.aidenlab.org/juicebox/) and HiGlass
+
+In this workshop we are going to focus on HiGlass;
+
+Local HiGlass Server:
+http://bifx-core3.bio.ed.ac.uk:32771/app
+
+Official HiGlass Server:
+https://higlass.io/app
+
+![][anatomy]
+
+
+This is a single HiGlass view, tracks can be added to the centre (typically a matrix here) and to the top, bottom, left or right. The view settings are in the upper right corner, note that each track has it's own settings menu. You can open multiple views, these can be resized (bottom right) and moved (upper left).
+
+Basic Operations
+
+Click ![][app] to open full screen app
+
+![][settings]
+
+<br>
+
+### Excerise 1
+
+Lets load some data and annotations
+
+Try loading a matrix into the *centre* of the view
+
+Select;
+Rao et al. (2014) GM12878 Mbol (allreps) 1kb
+
+Load as a heatmap (2d-tiles shows underlying aggregation)
+<!--update this image? -->
+![][add_rao]
+    
+Don't forget to add chromosome annotations (normally to at least the top track)
+
+Here we want hg19
+    
+![][add_chr_hg19]
+    
+You should be looking at something like this;
+
+![][rao_all_ann]
+    
+Here I've added chromosome annotations to the top and left tracks, I've also added hg19 gene annotations to the top. The text in the lower right of the matrix tells us information about the sample and the current resolution.
+
+What happens if you add a matrix to the bottom? (you might need to close centre track/resize bottom)
+
+![][bottom_matrix]
+
+
+<br>
+
+### Features
+Now that we have data in front of us, lets see if we can identify some features, we'll start by looking at a single chromosome then progressively zoom in. We are still working with the Rao data, try and follow along and see if you can see these features for yourself.
+
+<br>
+
+#### Compartments
+
+![][chr_3_hot]
+
+Once we 'zoom' into a single chromosome, one of the most notable features is this checkerboard or plaid pattern, this partitioning into alternating genomic compartments is observed across the genome, these are refered to as A/B compartments.
+
+This can be seen more clearly in the original Hi-C paper;
+
+![][aiden]
+
+Pearson Correalation, Lieberman-Aiden (2009)
+
+These compartments are identified by principle componants but also correspond with chromatin state, gene density, GC content and histone markers. Arbitrarily, A Compartments are defined as open gene dense regions (euchromatic), and B compartments as closed gene poor regions (heterochromatic).
+
+Subcompartments have also been identified but the method is not yet available, this requires billions of reads.
+
+<br>
+
+#### TADs
+Moving in closer to the diagonal we notice square blocks of interactions (<1 Mb), (resolution is 32k).
+
+![][tad_zoom]
+
+These contact domains are often refered to Topalogically Associated Domains (TADs), they are regions which interact more which each other than with neighboring regions either up or downstream along the diagonal.
+
+It can be difficult to define these boundaries precisely, both by eye or using a TAD caller, particularly when they seem to have a nested structure.
+
+TAD callers comparison from Forcato et al. 2017. Here each view shows Rao data as matrix (all reps) and bottom tracks show output of that TAD caller on each replicate.
+
+![][allrepssidebyside]
+
+Here we can see TAD's as blocks drawn onto the matrix, here just looking at a single sample.
+
+![][rephsidebyside]
+
+<br>
+
+#### Loops
+Zooming in further (4k) to these domains we may see enriched areas as dark spots.
+
+![][loop_zoom]
+
+Loops are at a smaller scale (80kb-500kb) and harder to see by eye, these enriched points of interaction are often seen as a corner peak.
+
+Note that loops close to the diagonal may be underestimated/missed due to noise, conversely loops called at longer ranges may be false as the background here is so sparse. Loops callers which compare points against the local background aim to alleviate this.
+
+These maps alone are purely qualatative, but they DO allow us to detect patterns and identify regions of interest. Tools can be used to identify the above features computationally, giving output in conventional 2D tracks, these in turn can be analysed by standard bioinformatics methods.
+
+
+<br>
+
+### Excercise 2
+Here I'm zooming in on my favourite gene, Sonic Hedgehog.
+
+![][shhzoom]
+
+See if you can find your favourite gene.
+
+        Hint: 'Toggle position search box' in View settings
+
+As well as displaying annotations you can also add other genomic data tracks of interest (e.g. from ChIP-Seq experiments).
+
+Try adding additional tracks on the horizontal axis
+
+(e.g. CTCF peaks from Encode)
+
+Right click in a matrix to add rules/cross sections
+
+    Can you see any interesting features?
+
+Are there relevant annotations available to add to your view?
+
+Hint; HICCUPS Loops overlayed on matrix
+
+Can you change the colour map for a matrix (Matrix settings/Configure Series/Colour Map)
+
+Above I've gone for 'Jet' blue
+    
+![][colours]
+    
+What happens if you adjust the colour intensity bar?
+
+If you want to save what you find just 'save views as Link' in the view option, this gives you a shortcut.
+
+<br>
+
+### HiGlass - Advanced Features
+Let's look at some more advanced features using multiple views in HiGlass. Let's say we want to compare two samples, it would be useful to compare the same region at the same resolution simultaniously.
+
+<br>
+
+#### Synchronisation
+
+One of the most useful features of HiGlass is to take the position and/or zoom level (resolution) from another view and apply it to the current view, this can also be locked so both views are synced together.
+
+![][new_link]
+
+Open another view (copies current view) and open settings menu
+
+Select 'Take and lock zoom and location with'
+
+Choose the matrix you want to copy zoom/location from
+
+These views are now linked.
+
+<br>
+
+#### Zooming via Viewport
+Another useful feature is to zoom into an area and display this on another view, i.e. 'Show this viewport on'
+
+![][view2]
+
+Open settings menu on one of the views
+
+Select 'Show this viewport on'
+
+Make sure the zoom level isn't locked
+
+Choose the matrix you want to copy zoom on
+
+The shaded area shows the extent of the zoomed view 
+
+<br>
+
+
+### Excercise 3
+Let's put everything you've learned into practice, using some different data.
+
+Here we are comparing a Wild Type and a cohesion loading factor Nipbl deletion matrix, see if you can re-create this figure from the HiGlass paper based on Scharzer et al. (2017).
+
+![][scharzer_exercise]
+
+<details>
+<summary>
+Help
+</summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i></h2>
+
+Clear all current views/annotations
+
+'Clear View' shortcut in view settings.
+
+Load each data set 'Scharzer et al (2017) NIPBL / Scarzer et al (2017) WT'
+
+Resize view before opening to get views in portrait
+
+Add chromosome/gene annotations (Mouse mm9)
+
+Navigate to the region of interest (in both views)
+
+~chr14: 40,000,000 - 100,000,000      
+
+Zoom on this region using viewports (in new views)
+
+~chr14: 60,000,000 - 80,000,000
+
+Add additional tracks
+
+Here RNA-Seq H3K27ac & H3K4me active histone marks for WT & Nipbl
+
+</div>
+</details>
+
+<br>
+
+    Can you find differences?
+
+<details>
+<summary>
+Hint*
+</summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i></h2>
+ see this figure from the paper;
+![][scharzer_fig]
+
+![][nibl_10]
+</div>
+</details>
+
+
+<!--Further Reading
+Take a look at these other examples
+
+Read the Docs; HiC-Pro Docs
+HiGlass Docs
+
+These tools also process/visualise HiC data;
+Juicer Tools (pre converts to Juicebox friendly format)
+Juicebox (runs like IGV, good If you want to explore your own data privately)
+
+You can also set up HiGlass locally via docker;
+Higlass Docker
+ 
+Additional tools/libraries can be installed on request but several require familiarity with python. -->
+<br>
+<br>
+<div class="key-points">
+<h2><i class="fas fa-thumbtack"></i>Key Aims:</h2>
+##
+ * Navigate HiGlass
+ * Exploring Features
+</div>
+<br>
+
+[anatomy]: images/anatomy.png ""
+[app]: images/app.png ""
+[add_rao]: images/add_rao.png ""
+[settings]: images/settings.png ""
+[add_chr_hg19]: images/add_chr_hg19.png ""
+[rao_all_ann]: images/rao_all_ann.png ""
+[bottom_matrix]: images/bottom_matrix.png ""
+[shhzoom]: images/shhzoom.png ""
+[colours]: images/colours.jpg ""
+[view2]: images/view2.png ""
+[scharzer_exercise]: images/scharzer_exercise.png ""
+[scharzer_fig]: images/scharzer_fig.png ""
+[nibl_10]: images/nibl_10.png ""
+[aiden]: images/aiden.png ""
+[chr_3_hot]: images/chr_3_hot.png ""
+[tad_zoom]: images/tad_zoom.png ""
+[allrepssidebyside]: images/allrepssidebyside.png ""
+[rephsidebyside]: images/rephsidebyside.png ""
+[loop_zoom]: images/loop_zoom.png ""
+[new_link]: images/new_link.png ""
