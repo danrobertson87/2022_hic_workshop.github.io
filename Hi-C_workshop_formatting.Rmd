@@ -120,7 +120,7 @@ Above is an example where replicates from condition one are not well correlated,
 
 ### The Matrix
 
-Before visualization our matrix lets go over the basics of a contact map.
+Before visualization of our matrix lets go over the basics of a contact map.
 
 Areas of high intensity mean lots of interactions in that location, the matrix allows us to see interactions across the whole genome, both short and long range.
 
@@ -153,7 +153,7 @@ Hi-C data contains systematic biases which need to be balanced. This is down to 
 ##
  * Converting file formats
  * Downstream Tools
- * Interptreting a matrix
+ * Interpreting a matrix
 </div>
 <br>
 

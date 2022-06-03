@@ -259,21 +259,22 @@ Hint*
 </div>
 </details>
 
+<br>
+<br>
 
-<!--Further Reading
-Take a look at these other examples
+#### Further Resources
 
-Read the Docs; HiC-Pro Docs
-HiGlass Docs
+HiC-Pro can also be run via a [NextFlow pipeline](https://nf-co.re/hic), this runs all the above steps and includes some additional downstream analysis.
 
-These tools also process/visualise HiC data;
-Juicer Tools (pre converts to Juicebox friendly format)
-Juicebox (runs like IGV, good If you want to explore your own data privately)
+List of all [HiCExplorer Tools](https://hicexplorer.readthedocs.io/en/latest/content/list-of-tools.html).
 
-You can also set up HiGlass locally via docker;
-Higlass Docker
- 
-Additional tools/libraries can be installed on request but several require familiarity with python. -->
+[Cooltools](https://cooltools.readthedocs.io/en/latest/index.html#) is also a highly recommended package.
+
+For [Micro-C analysis](https://micro-c.readthedocs.io/en/latest/index.html)
+
+A useful exhaustive list of further tools [here](https://github.com/mdozmorov/HiC_tools).
+
+
 <br>
 <br>
 <div class="key-points">

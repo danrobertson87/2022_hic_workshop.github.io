@@ -86,6 +86,10 @@ To see it enter the following URL, changing yourUserName to what ever your usern
 
 http://bifx-core3.bio.ed.ac.uk/~yourUserName
 
+For some of you, this may be found here instead;
+
+https://bifx-core3.bio.ed.ac.uk/Public/yourUserName/
+
 <br>
 
 ### 2. Data
