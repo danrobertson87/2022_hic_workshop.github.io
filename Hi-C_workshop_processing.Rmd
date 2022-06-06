@@ -118,8 +118,11 @@ head test_data/dixon_2M_2/SRR400264_01_R1.fastq
 ```
 
 @SRR400264.250001 HWI-ST216_0180:3:1101:17686:30917 length=36
+
 TATAGGGGCATGTTCAGATAAGTCACTTGTAAATAA
+
 +SRR400264.250001 HWI-ST216_0180:3:1101:17686:30917 length=36
+
 HHHHHHHHHHHHHHHHHHGHHHHHHHHHHHHHHHHH
 
 <br>
@@ -193,7 +196,7 @@ This is normally a lengthy process (hours/days) as there are large numbers of re
 <br>
 
 #### Output Files
-HiC-Pro gives us different output folders, with QC reports, intermediate data and matrix files (*note these matrix files and in triple sparse format and not useful for us today).
+HiC-Pro gives us different output folders, with QC reports, intermediate data and matrix files (*note these matrix files are in triple sparse format and not useful for us today).
 
 Once this has finished lets have a look at the output directory
 ```bash

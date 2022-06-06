@@ -104,7 +104,7 @@ ln -s $PWD ~/public_html/
 ```
 As Hi-C processing is slow, we are using some test data from the Dixon et al. 2012 [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3356448/).
 
-These contain a small subsets of reads (~2M). 
+These contain a small subsets of reads (~200,000). 
 
 Let's copy the data into our project folder, we are copying multiple folders and files so need the recursive '-r' argument.
 

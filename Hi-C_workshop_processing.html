@@ -334,7 +334,10 @@ $(document).ready(function () {
 <p>SRR400264_01_R2.fastq</p>
 <p>These contain both read and quality information.</p>
 <pre class="bash"><code>head test_data/dixon_2M_2/SRR400264_01_R1.fastq</code></pre>
-<p><span class="citation">@SRR400264.250001</span> HWI-ST216_0180:3:1101:17686:30917 length=36 TATAGGGGCATGTTCAGATAAGTCACTTGTAAATAA +SRR400264.250001 HWI-ST216_0180:3:1101:17686:30917 length=36 HHHHHHHHHHHHHHHHHHGHHHHHHHHHHHHHHHHH</p>
+<p><span class="citation">@SRR400264.250001</span> HWI-ST216_0180:3:1101:17686:30917 length=36</p>
+<p>TATAGGGGCATGTTCAGATAAGTCACTTGTAAATAA</p>
+<p>+SRR400264.250001 HWI-ST216_0180:3:1101:17686:30917 length=36</p>
+<p>HHHHHHHHHHHHHHHHHHGHHHHHHHHHHHHHHHHH</p>
 <p><br></p>
 </div>
 <div id="annotation-files" class="section level4">
@@ -387,7 +390,7 @@ All chromosome names must match!
 </div>
 <div id="output-files" class="section level4">
 <h4>Output Files</h4>
-<p>HiC-Pro gives us different output folders, with QC reports, intermediate data and matrix files (*note these matrix files and in triple sparse format and not useful for us today).</p>
+<p>HiC-Pro gives us different output folders, with QC reports, intermediate data and matrix files (*note these matrix files are in triple sparse format and not useful for us today).</p>
 <p>Once this has finished lets have a look at the output directory</p>
 <pre class="bash"><code>ls dixon_out/</code></pre>
 <p><br></p>
