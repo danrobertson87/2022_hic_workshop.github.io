@@ -227,7 +227,7 @@ Rather than looking through individual reports for each sample, lets use a tool 
 ```bash
 multiqc dixon_out/*
 ```
-https://bifx-core3.bio.ed.ac.uk/~USERNAME/Hi-C_workshop/dixon_out/multiqc_report.html
+https://bifx-core3.bio.ed.ac.uk/~USERNAME/Hi-C_workshop/multiqc_report.html
 
 ![][multiqc]
 
