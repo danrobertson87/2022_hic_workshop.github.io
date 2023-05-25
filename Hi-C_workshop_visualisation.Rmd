@@ -266,13 +266,15 @@ Hint*
 
 HiC-Pro can also be run via a [NextFlow pipeline](https://nf-co.re/hic), this runs all the above steps and includes some additional downstream analysis.
 
-List of all [HiCExplorer Tools](https://hicexplorer.readthedocs.io/en/latest/content/list-of-tools.html).
+List of all [HiCExplorer Tools](https://hicexplorer.readthedocs.io/en/latest/content/list-of-tools.html)
 
-[Cooltools](https://cooltools.readthedocs.io/en/latest/index.html#) is also a highly recommended package.
+[Cooltools](https://cooltools.readthedocs.io/en/latest/index.html#) is also a highly recommended package for analsis of cool files.
 
-For [Micro-C analysis](https://micro-c.readthedocs.io/en/latest/index.html)
+For a more detailed demo of Juicebox see [this](https://aidenlab.gitbook.io/juicebox/)
 
-A useful exhaustive list of further tools [here](https://github.com/mdozmorov/HiC_tools).
+For Micro-C analysis I'd recomend using [Micro-C Tools](https://micro-c.readthedocs.io/en/latest/index.html)
+
+A useful *exhaustive* list of further tools can be found [here](https://github.com/mdozmorov/HiC_tools).
 
 
 <br>

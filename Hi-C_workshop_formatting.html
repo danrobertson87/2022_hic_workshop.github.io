@@ -13,8 +13,8 @@
 
 <title>Creating the Matrix</title>
 
-<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 
 
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -140,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -173,8 +181,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -182,16 +190,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -235,7 +236,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -277,11 +278,49 @@ $(document).ready(function () {
 <script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
 </head>
 <hr />
+<div id="the-matrix" class="section level3">
+<h3>The Matrix</h3>
+<p>Before visualization of our matrix lets go over the basics of a
+contact map.</p>
+<p>Areas of high intensity mean lots of interactions in that location,
+the matrix allows us to see interactions across the whole genome, both
+short and long range.</p>
+<p><img src="images/cis_trans.png" /></p>
+<p>Here we have a matrix showing chromosomes 1, 2 and 3, you can clearly
+see chromosome territories, i.e. chromosomes are interacting with
+themselves (cis) with fewer interchromosomal (trans) interactions.</p>
+<p>Here we are zooming into chromosome 3, as expected there are lots of
+local interactions close to the diagonal, these regions are close in the
+linear sense so are more likely to interact which each other. As we move
+further away from the diagonal there are fewer interactions as these
+regions are further apart.</p>
+<p><img src="images/simple.png" /></p>
+<p>Note; the lower left half of the matrix is just a mirror image of the
+the upper right.</p>
+<p><br></p>
+<div id="normalisation" class="section level4">
+<h4>Normalisation</h4>
+<p>Hi-C data contains systematic biases which need to be balanced. This
+is down to both technical bias of sequencing/mapping and biological
+artifacts such as GC content. Here the ICE method of normalisation is
+applied to a raw hic matrix.</p>
+<p><img src="images/norm.png" /></p>
+<p><br></p>
+</div>
+</div>
 <div id="file-formats" class="section level3">
 <h3>File Formats</h3>
-<p>After processing we should now have paired contacts that contain only valid interactions. This allows us to plot a matrix showing points of interaction. As mentioned previously, HiC-Pro has given us a matrix but it is not in the format we need. There are currently two principle formats used for Hi-C, these are each tied to their respective tools (.hic for Juicebox &amp; .cool for HiGlass). Both formats/tools are supported by 4DN as well as other tools.</p>
+<p>After processing we should now have paired contacts that contain only
+valid interactions. This allows us to plot a matrix showing points of
+interaction. As mentioned previously, HiC-Pro has given us a matrix but
+it is not in the format we need. There are currently two principle
+formats used for Hi-C, these are each tied to their respective tools
+(.hic for Juicebox &amp; .cool for HiGlass). Both formats/tools are
+supported by 4D Nucleome program.</p>
 <p><br></p>
-<p>‘A significant portion of bioinformatics is just converting data from one format to another.’ Jason Stajich</p>
+<p><img src="images/4dn.png" /></p>
+<p>‘A significant portion of bioinformatics is just converting data from
+one format to another.’ Jason Stajich</p>
 <!--Matrix (triplet sparse format)
 Two interacting bins and an interaction frequency.
 
@@ -299,64 +338,107 @@ These can be plotted directly, here with HiCPlotter;
 <h4>Valid Pairs</h4>
 <p>These are the pairs of coordinates for valid interactions only.</p>
 <p>dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs</p>
-<p>This is what we want to work with, to convert into out required format.</p>
+<p>This is what we want to work with, to convert into out required
+format.</p>
 <pre class="bash"><code>head dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs</code></pre>
 <p><br></p>
 </div>
 <div id="formatting-with-cooler" class="section level4">
 <h4>Formatting with Cooler</h4>
-<p>As we’re using HiGlass, lets convert the valid pairs into the cool format, the cooler tool can do this.</p>
-<p>We can either do this by running multiple cooler commands directly or making use of the HiC-Pro script hicpro2higlass.sh</p>
+<p>As we’re going to be using HiGlass, lets convert the valid pairs into
+the cool format, the cooler tool can do this.</p>
+<p>We can either do this by running multiple cooler commands directly or
+making use of the HiC-Pro script hicpro2higlass.sh</p>
 <p>Using HiC-Pro Utilities This can be achieved by running;</p>
 <p>Get the chromsizes file</p>
 <pre class="bash"><code>cp /homes2/drober19/hic_workshop/chrom_hg19.sizes .</code></pre>
 <p>Create an output directory</p>
 <pre class="bash"><code>mkdir cooler_out</code></pre>
-<p>Note the resolution ‘-r’ is set to 10kb for the cool file, this will also give us a .mcool file with multiple resolutions. -n matrix is balanced (normalised)</p>
-<pre class="bash"><code>/library/software/misc_containers/containers/hicpro/3.1.0/hicpro_3.1.0_ubuntu.img hicpro2higlass.sh -i dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs -r 10000 -c chrom_hg19.sizes -p 2 -n -o cooler_out
+<p>Note the resolution ‘-r’ is set to 10kb for the cool file, this will
+also give us a .mcool file with multiple resolutions. -n matrix is
+balanced (normalised)</p>
+<pre class="bash"><code>/library/software/misc_containers/containers/hicpro/3.1.0/hicpro_3.1.0_ubuntu.img hicpro2higlass.sh -i dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs -r 10000 -c chrom_hg19.sizes -p 2 -n -o cooler_out &amp;
 
-/library/software/misc_containers/containers/hicpro/3.1.0/hicpro_3.1.0_ubuntu.img hicpro2higlass.sh -i dixon_out/hic_results/data/dixon_2M_2/dixon_2M_2.allValidPairs -r 10000 -c chrom_hg19.sizes -p 2 -n -o cooler_out</code></pre>
+/library/software/misc_containers/containers/hicpro/3.1.0/hicpro_3.1.0_ubuntu.img hicpro2higlass.sh -i dixon_out/hic_results/data/dixon_2M_2/dixon_2M_2.allValidPairs -r 10000 -c chrom_hg19.sizes -p 2 -n -o cooler_out &amp;</code></pre>
 <p><br></p>
 </div>
 <div id="using-cooler" class="section level4">
 <h4>Using Cooler</h4>
-<p>Or if you want to do this by step by step, see <a href="https://github.com/mirnylab/cooler-binder/blob/master/cooler_cli.ipynb" class="uri">https://github.com/mirnylab/cooler-binder/blob/master/cooler_cli.ipynb</a>.</p>
-<p>We should now all have a balanced matrix in the .cool/.mcool formats.</p>
-<p>This mcool file can be loaded into HiGlass, this can only been done by an admin but I’ve already added these files for demonstration;</p>
-<p><img src="images/dixon_sparse.png" /> Remember this was just a subset of reads so we see a sparse matrix.</p>
+<p>Or if you want to do this by step by step, see <a
+href="https://github.com/mirnylab/cooler-binder/blob/master/cooler_cli.ipynb"
+class="uri">https://github.com/mirnylab/cooler-binder/blob/master/cooler_cli.ipynb</a>.
+Note this still requires some wrangling of the HiC-Pro output.</p>
+<p>We should now all have a set of balanced matrices in the .cool/.mcool
+formats.</p>
+<p>This mcool file can be loaded into HiGlass, unfortunately this can
+only been done by an admin but I’ve already added these files for
+demonstration;</p>
+<p><img src="images/dixon_sparse.png" /> Remember this was just a subset
+of reads so we see a sparse matrix. We will play more with HiGlass later
+on using some different data.</p>
 <!--You can turn this off in HiGlass, by clicking options for a matrix then Configure Series/Transforms/None.
 
 Alternative methods exist, but the differences are opaque; ICE/KR/VC Comparison -->
 <p><br></p>
 </div>
+<div id="formatting-with-juicer-tools" class="section level4">
+<h4>Formatting with Juicer Tools</h4>
+<p>An alternative visualisation tool is Juicebox, this uses the .hic
+format which is created using Juicer or Juicer Tools, thankfully HiC-Pro
+also comes with a script that creates this Juicebox file from our
+HiC-Pro output; hicpro2juicebox.sh</p>
+<p>Create another output directory</p>
+<pre class="bash"><code>mkdir juicer_tools_out</code></pre>
+<p>We can create .hic files by running;</p>
+<pre class="bash"><code>sh PATH_TO_SCRIPT/hicpro2juicebox.sh -i dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs
+ -j /library/software/misc_containers/containers/hicpro/3.1.0/juicer_tools_2.13.06.jar -g hg19 -o juicer_tools_out &amp;
+
+sh PATH_TO_SCRIPT/hicpro2juicebox.sh -i dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs
+ -j /library/software/misc_containers/containers/hicpro/3.1.0/juicer_tools_2.13.06.jar -g hg19 -o juicer_tools_out &amp;</code></pre>
+<p>Once we have the .hic files we can load these into directly into
+Juicebox, we have a choice between the web version and a local GUI which
+can be run on your own machine (much like IGV). For simplicity, today we
+will just use the webtool (Note the GUI version does offer some
+additional functionality).</p>
+<p>This can be access here; <a href="https://aidenlab.org/juicebox/"
+class="uri">https://aidenlab.org/juicebox/</a></p>
+<p><img src="images/jb_dixon.png" /></p>
+<p>To load your data select ‘Load Map’ from the top toolbar and then
+‘Local File’ to navigate to your file. In this case you will need to
+download the file from your public_html space, or copy this from the
+server.</p>
+<p>e.g. <a
+href="https://bifx-core3.bio.ed.ac.uk/~drober19/Hi-C_workshop/juicer_tools_out/"
+class="uri">https://bifx-core3.bio.ed.ac.uk/~drober19/Hi-C_workshop/juicer_tools_out/</a></p>
+<p>Again, this is just a subset of the original experiment, see you if
+you can find the full dataset within the Juicebox data archive (reminder
+this is from Dixon et al. human IMR90 fibroblasts).</p>
+<p>As we’ve seen, one of the main advantages of Juicebox is the ease of
+loading our own data, there are advantages to both platforms, personally
+I prefer HiGlass which we will delve further into shortly.</p>
+<p><br></p>
+</div>
 </div>
 <div id="hicexplorer" class="section level3">
 <h3>HiCExplorer</h3>
-<p>Once we have cool files we can use these files as input for other tools, <a href="https://hicexplorer.readthedocs.io/en/latest/index.html">HiCExplorer</a> is a tool with a lot of useful functions for further analysis.</p>
-<p>Lets compare our matrices using ‘hicPlotDistVsCounts’, this allows a quick comparison between multiple matrices of the Hi-C counts ‘enrichment’ at different genomic distances.Biological replicates should display the exact same distribution</p>
+<p>Once we have matrix files (cool / hic) we can use these as input for
+other tools for analysis, <a
+href="https://hicexplorer.readthedocs.io/en/latest/index.html">HiCExplorer</a>
+is a tool with a lot of useful functions for further analysis. It
+accepts multiple file formats :)</p>
+<p>Lets compare our matrices using ‘hicPlotDistVsCounts’, this allows a
+quick comparison between multiple matrices of the Hi-C counts
+‘enrichment’ at different genomic distances. Biological replicates
+should display the exact same distribution</p>
 <p>This creates a distance vs. Hi-C counts plot;</p>
 <pre class="bash"><code>hicPlotDistVsCounts -m cooler_out/dixon_2M.cool cooler_out/dixon_2M_2.cool -o counts_vs_dist.png </code></pre>
 <p><img src="images/counts_vs_dist_10kb_dixon.png" /></p>
 <pre><code>How do our samples look? Remember these are small subsets.</code></pre>
 <p><img src="images/counts_vs_dist_example.png" /></p>
-<p>Above is an example where replicates from condition one are not well correlated, but are distinct from the second condition. The second are well correlated and display enriched long-range contacts. (All are smoother as these were binned at 50kb)</p>
-<p><br></p>
-</div>
-<div id="the-matrix" class="section level3">
-<h3>The Matrix</h3>
-<p>Before visualization of our matrix lets go over the basics of a contact map.</p>
-<p>Areas of high intensity mean lots of interactions in that location, the matrix allows us to see interactions across the whole genome, both short and long range.</p>
-<p><img src="images/cis_trans.png" /></p>
-<p>Here we have a matrix showing chromosomes 1, 2 and 3, you can clearly see chromosome territories, i.e. chromosomes are interacting with themself (cis) with few interchromosomal (trans) interactaions.</p>
-<p>Here we are zooming into chromosome 3, as expected there are lots of local interactions close to the diagonal, these regions are close in the linear sense so are more likely to interact which each other. As we move further away from the diagonal there are fewer interactions as these regions are further apart.</p>
-<p><img src="images/simple.png" /></p>
-<p>Note; the lower left half of the matrix is just a mirror image of the the upper right.</p>
-<p><br></p>
-<div id="normalisation" class="section level4">
-<h4>Normalisation</h4>
-<p>Hi-C data contains systematic biases which need to be balanced. This is down to both techincal bias of sequencing/mapping and biological artifacts such as GC content. Here the ICE method of normalisation is applied to a raw hic matrix.</p>
-<p><img src="images/norm.png" /></p>
-<p><br></p>
+<p>Above is an example where replicates from condition one are not well
+correlated, but are distinct from the second condition. The second are
+well correlated and display enriched long-range contacts. (All are
+smoother as these were binned at 50kb)</p>
 <p><br></p>
 <div class="key-points">
 <h2>
@@ -365,14 +447,13 @@ Alternative methods exist, but the differences are opaque; ICE/KR/VC Comparison 
 <div id="section" class="section level2">
 <h2></h2>
 <ul>
+<li>Interpreting a matrix</li>
 <li>Converting file formats</li>
 <li>Downstream Tools</li>
-<li>Interpreting a matrix</li>
 </ul>
 </div>
 </div>
 <p><br></p>
-</div>
 </div>
 
 

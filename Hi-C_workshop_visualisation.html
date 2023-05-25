@@ -13,8 +13,8 @@
 
 <title>Visualisation</title>
 
-<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 
 
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -140,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -173,8 +181,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -182,16 +190,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -235,7 +236,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -279,12 +280,20 @@ $(document).ready(function () {
 <hr />
 <div id="visualisation-with-higlass" class="section level3">
 <h3>Visualisation with HiGlass</h3>
-<p>For interactive visualisation the main tools are <a href="http://www.aidenlab.org/juicebox/">Juicebox</a> and HiGlass</p>
+<p>For interactive visualisation the main tools are <a
+href="http://www.aidenlab.org/juicebox/">Juicebox</a> and HiGlass</p>
 <p>In this workshop we are going to focus on HiGlass;</p>
-<p>Local HiGlass Server: <a href="http://bifx-core3.bio.ed.ac.uk:32771/app" class="uri">http://bifx-core3.bio.ed.ac.uk:32771/app</a></p>
-<p>Official HiGlass Server: <a href="https://higlass.io/app" class="uri">https://higlass.io/app</a></p>
+<p>Local HiGlass Server: <a
+href="http://bifx-core3.bio.ed.ac.uk:32771/app"
+class="uri">http://bifx-core3.bio.ed.ac.uk:32771/app</a></p>
+<p>Official HiGlass Server: <a href="https://higlass.io/app"
+class="uri">https://higlass.io/app</a></p>
 <p><img src="images/anatomy.png" /></p>
-<p>This is a single HiGlass view, tracks can be added to the centre (typically a matrix here) and to the top, bottom, left or right. The view settings are in the upper right corner, note that each track has it’s own settings menu. You can open multiple views, these can be resized (bottom right) and moved (upper left).</p>
+<p>This is a single HiGlass view, tracks can be added to the centre
+(typically a matrix here) and to the top, bottom, left or right. The
+view settings are in the upper right corner, note that each track has
+it’s own settings menu. You can open multiple views, these can be
+resized (bottom right) and moved (upper left).</p>
 <p>Basic Operations</p>
 <p>Click <img src="images/app.png" /> to open full screen app</p>
 <p><img src="images/settings.png" /></p>
@@ -295,51 +304,87 @@ $(document).ready(function () {
 <p>Lets load some data and annotations</p>
 <p>Try loading a matrix into the <em>centre</em> of the view</p>
 <p>Select; Rao et al. (2014) GM12878 Mbol (allreps) 1kb</p>
-<p>Load as a heatmap (2d-tiles shows underlying aggregation) <!--update this image? --> <img src="images/add_rao.png" /></p>
-<p>Don’t forget to add chromosome annotations (normally to at least the top track)</p>
+<p>Load as a heatmap (2d-tiles shows underlying aggregation)
+<!--update this image? --> <img src="images/add_rao.png" /></p>
+<p>Don’t forget to add chromosome annotations (normally to at least the
+top track)</p>
 <p>Here we want hg19</p>
 <p><img src="images/add_chr_hg19.png" /></p>
 <p>You should be looking at something like this;</p>
 <p><img src="images/rao_all_ann.png" /></p>
-<p>Here I’ve added chromosome annotations to the top and left tracks, I’ve also added hg19 gene annotations to the top. The text in the lower right of the matrix tells us information about the sample and the current resolution.</p>
-<p>What happens if you add a matrix to the bottom? (you might need to close centre track/resize bottom)</p>
+<p>Here I’ve added chromosome annotations to the top and left tracks,
+I’ve also added hg19 gene annotations to the top. The text in the lower
+right of the matrix tells us information about the sample and the
+current resolution.</p>
+<p>What happens if you add a matrix to the bottom? (you might need to
+close centre track/resize bottom)</p>
 <p><img src="images/bottom_matrix.png" /></p>
 <p><br></p>
 </div>
 <div id="features" class="section level3">
 <h3>Features</h3>
-<p>Now that we have data in front of us, lets see if we can identify some features, we’ll start by looking at a single chromosome then progressively zoom in. We are still working with the Rao data, try and follow along and see if you can see these features for yourself.</p>
+<p>Now that we have data in front of us, lets see if we can identify
+some features, we’ll start by looking at a single chromosome then
+progressively zoom in. We are still working with the Rao data, try and
+follow along and see if you can see these features for yourself.</p>
 <p><br></p>
 <div id="compartments" class="section level4">
 <h4>Compartments</h4>
 <p><img src="images/chr_3_hot.png" /></p>
-<p>Once we ‘zoom’ into a single chromosome, one of the most notable features is this checkerboard or plaid pattern, this partitioning into alternating genomic compartments is observed across the genome, these are refered to as A/B compartments.</p>
+<p>Once we ‘zoom’ into a single chromosome, one of the most notable
+features is this checkerboard or plaid pattern, this partitioning into
+alternating genomic compartments is observed across the genome, these
+are refered to as A/B compartments.</p>
 <p>This can be seen more clearly in the original Hi-C paper;</p>
 <p><img src="images/aiden.png" /></p>
 <p>Pearson Correalation, Lieberman-Aiden (2009)</p>
-<p>These compartments are identified by principle componants but also correspond with chromatin state, gene density, GC content and histone markers. Arbitrarily, A Compartments are defined as open gene dense regions (euchromatic), and B compartments as closed gene poor regions (heterochromatic).</p>
-<p>Subcompartments have also been identified but the method is not yet available, this requires billions of reads.</p>
+<p>These compartments are identified by principle componants but also
+correspond with chromatin state, gene density, GC content and histone
+markers. Arbitrarily, A Compartments are defined as open gene dense
+regions (euchromatic), and B compartments as closed gene poor regions
+(heterochromatic).</p>
+<p>Subcompartments have also been identified but the method is not yet
+available, this requires billions of reads.</p>
 <p><br></p>
 </div>
 <div id="tads" class="section level4">
 <h4>TADs</h4>
-<p>Moving in closer to the diagonal we notice square blocks of interactions (&lt;1 Mb), (resolution is 32k).</p>
+<p>Moving in closer to the diagonal we notice square blocks of
+interactions (&lt;1 Mb), (resolution is 32k).</p>
 <p><img src="images/tad_zoom.png" /></p>
-<p>These contact domains are often refered to Topalogically Associated Domains (TADs), they are regions which interact more which each other than with neighboring regions either up or downstream along the diagonal.</p>
-<p>It can be difficult to define these boundaries precisely, both by eye or using a TAD caller, particularly when they seem to have a nested structure.</p>
-<p>TAD callers comparison from Forcato et al. 2017. Here each view shows Rao data as matrix (all reps) and bottom tracks show output of that TAD caller on each replicate.</p>
+<p>These contact domains are often refered to Topalogically Associated
+Domains (TADs), they are regions which interact more which each other
+than with neighboring regions either up or downstream along the
+diagonal.</p>
+<p>It can be difficult to define these boundaries precisely, both by eye
+or using a TAD caller, particularly when they seem to have a nested
+structure.</p>
+<p>TAD callers comparison from Forcato et al. 2017. Here each view shows
+Rao data as matrix (all reps) and bottom tracks show output of that TAD
+caller on each replicate.</p>
 <p><img src="images/allrepssidebyside.png" /></p>
-<p>Here we can see TAD’s as blocks drawn onto the matrix, here just looking at a single sample.</p>
+<p>Here we can see TAD’s as blocks drawn onto the matrix, here just
+looking at a single sample.</p>
 <p><img src="images/rephsidebyside.png" /></p>
 <p><br></p>
 </div>
 <div id="loops" class="section level4">
 <h4>Loops</h4>
-<p>Zooming in further (4k) to these domains we may see enriched areas as dark spots.</p>
+<p>Zooming in further (4k) to these domains we may see enriched areas as
+dark spots.</p>
 <p><img src="images/loop_zoom.png" /></p>
-<p>Loops are at a smaller scale (80kb-500kb) and harder to see by eye, these enriched points of interaction are often seen as a corner peak.</p>
-<p>Note that loops close to the diagonal may be underestimated/missed due to noise, conversely loops called at longer ranges may be false as the background here is so sparse. Loops callers which compare points against the local background aim to alleviate this.</p>
-<p>These maps alone are purely qualatative, but they DO allow us to detect patterns and identify regions of interest. Tools can be used to identify the above features computationally, giving output in conventional 2D tracks, these in turn can be analysed by standard bioinformatics methods.</p>
+<p>Loops are at a smaller scale (80kb-500kb) and harder to see by eye,
+these enriched points of interaction are often seen as a corner
+peak.</p>
+<p>Note that loops close to the diagonal may be underestimated/missed
+due to noise, conversely loops called at longer ranges may be false as
+the background here is so sparse. Loops callers which compare points
+against the local background aim to alleviate this.</p>
+<p>These maps alone are purely qualatative, but they DO allow us to
+detect patterns and identify regions of interest. Tools can be used to
+identify the above features computationally, giving output in
+conventional 2D tracks, these in turn can be analysed by standard
+bioinformatics methods.</p>
 <p><br></p>
 </div>
 </div>
@@ -349,27 +394,35 @@ $(document).ready(function () {
 <p><img src="images/shhzoom.png" /></p>
 <p>See if you can find your favourite gene.</p>
 <pre><code>    Hint: &#39;Toggle position search box&#39; in View settings</code></pre>
-<p>As well as displaying annotations you can also add other genomic data tracks of interest (e.g. from ChIP-Seq experiments).</p>
+<p>As well as displaying annotations you can also add other genomic data
+tracks of interest (e.g. from ChIP-Seq experiments).</p>
 <p>Try adding additional tracks on the horizontal axis</p>
 <p>(e.g. CTCF peaks from Encode)</p>
 <p>Right click in a matrix to add rules/cross sections</p>
 <pre><code>Can you see any interesting features?</code></pre>
 <p>Are there relevant annotations available to add to your view?</p>
 <p>Hint; HICCUPS Loops overlayed on matrix</p>
-<p>Can you change the colour map for a matrix (Matrix settings/Configure Series/Colour Map)</p>
+<p>Can you change the colour map for a matrix (Matrix settings/Configure
+Series/Colour Map)</p>
 <p>Above I’ve gone for ‘Jet’ blue</p>
 <p><img src="images/colours.jpg" /></p>
 <p>What happens if you adjust the colour intensity bar?</p>
-<p>If you want to save what you find just ‘save views as Link’ in the view option, this gives you a shortcut.</p>
+<p>If you want to save what you find just ‘save views as Link’ in the
+view option, this gives you a shortcut.</p>
 <p><br></p>
 </div>
 <div id="higlass---advanced-features" class="section level3">
 <h3>HiGlass - Advanced Features</h3>
-<p>Let’s look at some more advanced features using multiple views in HiGlass. Let’s say we want to compare two samples, it would be useful to compare the same region at the same resolution simultaniously.</p>
+<p>Let’s look at some more advanced features using multiple views in
+HiGlass. Let’s say we want to compare two samples, it would be useful to
+compare the same region at the same resolution simultaniously.</p>
 <p><br></p>
 <div id="synchronisation" class="section level4">
 <h4>Synchronisation</h4>
-<p>One of the most useful features of HiGlass is to take the position and/or zoom level (resolution) from another view and apply it to the current view, this can also be locked so both views are synced together.</p>
+<p>One of the most useful features of HiGlass is to take the position
+and/or zoom level (resolution) from another view and apply it to the
+current view, this can also be locked so both views are synced
+together.</p>
 <p><img src="images/new_link.png" /></p>
 <p>Open another view (copies current view) and open settings menu</p>
 <p>Select ‘Take and lock zoom and location with’</p>
@@ -379,7 +432,8 @@ $(document).ready(function () {
 </div>
 <div id="zooming-via-viewport" class="section level4">
 <h4>Zooming via Viewport</h4>
-<p>Another useful feature is to zoom into an area and display this on another view, i.e. ‘Show this viewport on’</p>
+<p>Another useful feature is to zoom into an area and display this on
+another view, i.e. ‘Show this viewport on’</p>
 <p><img src="images/view2.png" /></p>
 <p>Open settings menu on one of the views</p>
 <p>Select ‘Show this viewport on’</p>
@@ -391,8 +445,11 @@ $(document).ready(function () {
 </div>
 <div id="excercise-3" class="section level3">
 <h3>Excercise 3</h3>
-<p>Let’s put everything you’ve learned into practice, using some different data.</p>
-<p>Here we are comparing a Wild Type and a cohesion loading factor Nipbl deletion matrix, see if you can re-create this figure from the HiGlass paper based on Scharzer et al. (2017).</p>
+<p>Let’s put everything you’ve learned into practice, using some
+different data.</p>
+<p>Here we are comparing a Wild Type and a cohesion loading factor Nipbl
+deletion matrix, see if you can re-create this figure from the HiGlass
+paper based on Scharzer et al. (2017).</p>
 <p><img src="images/scharzer_exercise.png" /></p>
 <details>
 <summary>
@@ -404,7 +461,8 @@ Help
 </h2>
 <p>Clear all current views/annotations</p>
 <p>‘Clear View’ shortcut in view settings.</p>
-<p>Load each data set ‘Scharzer et al (2017) NIPBL / Scarzer et al (2017) WT’</p>
+<p>Load each data set ‘Scharzer et al (2017) NIPBL / Scarzer et al
+(2017) WT’</p>
 <p>Resize view before opening to get views in portrait</p>
 <p>Add chromosome/gene annotations (Mouse mm9)</p>
 <p>Navigate to the region of interest (in both views)</p>
@@ -412,7 +470,8 @@ Help
 <p>Zoom on this region using viewports (in new views)</p>
 <p>~chr14: 60,000,000 - 80,000,000</p>
 <p>Add additional tracks</p>
-<p>Here RNA-Seq H3K27ac &amp; H3K4me active histone marks for WT &amp; Nipbl</p>
+<p>Here RNA-Seq H3K27ac &amp; H3K4me active histone marks for WT &amp;
+Nipbl</p>
 </div>
 </details>
 <p><br></p>
@@ -425,18 +484,30 @@ Hint*
 <h2>
 <i class="far fa-eye"></i>
 </h2>
-<p>see this figure from the paper; <img src="images/scharzer_fig.png" /></p>
+<p>see this figure from the paper; <img
+src="images/scharzer_fig.png" /></p>
 <p><img src="images/nibl_10.png" /></p>
 </div>
 </details>
 <p><br> <br></p>
 <div id="further-resources" class="section level4">
 <h4>Further Resources</h4>
-<p>HiC-Pro can also be run via a <a href="https://nf-co.re/hic">NextFlow pipeline</a>, this runs all the above steps and includes some additional downstream analysis.</p>
-<p>List of all <a href="https://hicexplorer.readthedocs.io/en/latest/content/list-of-tools.html">HiCExplorer Tools</a>.</p>
-<p><a href="https://cooltools.readthedocs.io/en/latest/index.html#">Cooltools</a> is also a highly recommended package.</p>
-<p>For <a href="https://micro-c.readthedocs.io/en/latest/index.html">Micro-C analysis</a></p>
-<p>A useful exhaustive list of further tools <a href="https://github.com/mdozmorov/HiC_tools">here</a>.</p>
+<p>HiC-Pro can also be run via a <a href="https://nf-co.re/hic">NextFlow
+pipeline</a>, this runs all the above steps and includes some additional
+downstream analysis.</p>
+<p>List of all <a
+href="https://hicexplorer.readthedocs.io/en/latest/content/list-of-tools.html">HiCExplorer
+Tools</a></p>
+<p><a
+href="https://cooltools.readthedocs.io/en/latest/index.html#">Cooltools</a>
+is also a highly recommended package for analsis of cool files.</p>
+<p>For a more detailed demo of Juicebox see <a
+href="https://aidenlab.gitbook.io/juicebox/">this</a></p>
+<p>For Micro-C analysis I’d recomend using <a
+href="https://micro-c.readthedocs.io/en/latest/index.html">Micro-C
+Tools</a></p>
+<p>A useful <em>exhaustive</em> list of further tools can be found <a
+href="https://github.com/mdozmorov/HiC_tools">here</a>.</p>
 <br> <br>
 <div class="key-points">
 <h2>
