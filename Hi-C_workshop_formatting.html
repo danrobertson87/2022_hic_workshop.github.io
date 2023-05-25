@@ -390,10 +390,10 @@ HiC-Pro output; hicpro2juicebox.sh</p>
 <p>Create another output directory</p>
 <pre class="bash"><code>mkdir juicer_tools_out</code></pre>
 <p>We can create .hic files by running;</p>
-<pre class="bash"><code>sh PATH_TO_SCRIPT/hicpro2juicebox.sh -i dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs
+<pre class="bash"><code>sh /library/software/misc_containers/containers/hicpro/3.1.0/hicpro2juicebox.sh -i dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs
  -j /library/software/misc_containers/containers/hicpro/3.1.0/juicer_tools_2.13.06.jar -g hg19 -o juicer_tools_out &amp;
 
-sh PATH_TO_SCRIPT/hicpro2juicebox.sh -i dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs
+sh /library/software/misc_containers/containers/hicpro/3.1.0/hicpro2juicebox.sh -i dixon_out/hic_results/data/dixon_2M/dixon_2M.allValidPairs
  -j /library/software/misc_containers/containers/hicpro/3.1.0/juicer_tools_2.13.06.jar -g hg19 -o juicer_tools_out &amp;</code></pre>
 <p>Once we have the .hic files we can load these into directly into
 Juicebox, we have a choice between the web version and a local GUI which
@@ -408,8 +408,8 @@ class="uri">https://aidenlab.org/juicebox/</a></p>
 download the file from your public_html space, or copy this from the
 server.</p>
 <p>e.g. <a
-href="https://bifx-core3.bio.ed.ac.uk/~drober19/Hi-C_workshop/juicer_tools_out/"
-class="uri">https://bifx-core3.bio.ed.ac.uk/~drober19/Hi-C_workshop/juicer_tools_out/</a></p>
+href="https://bifx-core3.bio.ed.ac.uk/~USERNAME/Hi-C_workshop/juicer_tools_out/"
+class="uri">https://bifx-core3.bio.ed.ac.uk/~USERNAME/Hi-C_workshop/juicer_tools_out/</a></p>
 <p>Again, this is just a subset of the original experiment, see you if
 you can find the full dataset within the Juicebox data archive (reminder
 this is from Dixon et al. human IMR90 fibroblasts).</p>
